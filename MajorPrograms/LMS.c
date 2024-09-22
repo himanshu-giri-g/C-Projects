@@ -18,14 +18,16 @@
 #define AUTHOR_LENGTH 100
 #define USERNAME_LENGTH 50
 
-typedef struct {
+typedef struct 
+{
     int id;
     char title[TITLE_LENGTH];
     char author[AUTHOR_LENGTH];
     int is_borrowed;
 } Book;
 
-typedef struct {
+typedef struct 
+{
     int id;
     char username[USERNAME_LENGTH];
     int borrowed_books[MAX_BOOKS];
@@ -33,6 +35,7 @@ typedef struct {
 
 Book library[MAX_BOOKS];
 User users[MAX_USERS];
+
 int book_count = 0;
 int user_count = 0;
 
@@ -56,7 +59,8 @@ int main() {
     return 0;
 }
 
-void initialize() {
+void initialize() 
+{
     // Prepopulate with some books
     strcpy(library[0].title, "The Great Gatsby");
     strcpy(library[0].author, "F. Scott Fitzgerald");
@@ -76,7 +80,8 @@ void initialize() {
     user_count++;
 }
 
-void menu() {
+void menu() 
+{
     int choice;
     do {
         printf("\nLibrary Management System\n");
@@ -95,7 +100,8 @@ void menu() {
         scanf("%d", &choice);
         clear_buffer();
         
-        switch (choice) {
+        switch (choice) 
+        {
             case 1: add_book(); break;
             case 2: list_books(); break;
             case 3: search_book(); break;
@@ -112,11 +118,13 @@ void menu() {
     } while (choice != 0);
 }
 
-void clear_buffer() {
+void clear_buffer() 
+{
     while (getchar() != '\n'); // Clear input buffer
 }
 
-void add_book() {
+void add_book() 
+{
     if (book_count >= MAX_BOOKS) {
         printf("Library is full!\n");
         return;
@@ -137,13 +145,16 @@ void add_book() {
     printf("Book added successfully!\n");
 }
 
-void list_books() {
-    if (book_count == 0) {
+void list_books() 
+{
+    if (book_count == 0) 
+    {
         printf("No books available.\n");
         return;
     }
     printf("\nBooks in Library:\n");
-    for (int i = 0; i < book_count; i++) {
+    for (int i = 0; i < book_count; i++) 
+    {
         printf("ID: %d | Title: %s | Author: %s | Borrowed: %s\n", 
                 library[i].id, 
                 library[i].title, 
@@ -152,65 +163,83 @@ void list_books() {
     }
 }
 
-void search_book() {
+void search_book() 
+{
     char title[TITLE_LENGTH];
     printf("Enter book title to search: ");
     fgets(title, TITLE_LENGTH, stdin);
     strtok(title, "\n");  // Remove newline
 
-    for (int i = 0; i < book_count; i++) {
-        if (strstr(library[i].title, title) != NULL) {
+    for (int i = 0; i < book_count; i++) 
+    {
+        if (strstr(library[i].title, title) != NULL) 
+        {
             printf("Found: ID: %d | Title: %s | Author: %s | Borrowed: %s\n", 
                    library[i].id, 
                    library[i].title, 
                    library[i].author, 
                    library[i].is_borrowed ? "Yes" : "No");
+
             return;
         }
     }
     printf("Book not found.\n");
 }
 
-void borrow_book() {
+void borrow_book()
+ {
     int book_id;
     printf("Enter the book ID to borrow: ");
     scanf("%d", &book_id);
     clear_buffer();
 
-    if (book_id <= 0 || book_id > book_count) {
+    if (book_id <= 0 || book_id > book_count) 
+    {
         printf("Invalid book ID.\n");
         return;
     }
 
-    if (library[book_id - 1].is_borrowed) {
+    if (library[book_id - 1].is_borrowed) 
+    {
         printf("Book is already borrowed.\n");
-    } else {
+    } 
+
+    else
+    {
         library[book_id - 1].is_borrowed = 1;
         printf("Book borrowed successfully!\n");
     }
 }
 
-void return_book() {
+void return_book() 
+{
     int book_id;
     printf("Enter the book ID to return: ");
     scanf("%d", &book_id);
     clear_buffer();
 
-    if (book_id <= 0 || book_id > book_count) {
+    if (book_id <= 0 || book_id > book_count)
+    {
         printf("Invalid book ID.\n");
         return;
     }
 
-    if (!library[book_id - 1].is_borrowed) {
+    if (!library[book_id - 1].is_borrowed) 
+    {
         printf("Book is not borrowed.\n");
-    } else {
+    } 
+    
+    else 
+    {
         library[book_id - 1].is_borrowed = 0;
         printf("Book returned successfully!\n");
     }
 }
 
-void add_user() {
-    if (user_count >= MAX_USERS) {
+void add_user() 
+{
+    if (user_count >= MAX_USERS) 
+    {
         printf("User limit reached!\n");
         return;
     }
@@ -227,24 +256,31 @@ void add_user() {
     printf("User added successfully!\n");
 }
 
-void list_users() {
-    if (user_count == 0) {
+void list_users() 
+{
+    if (user_count == 0) 
+    {
         printf("No users available.\n");
         return;
     }
+
     printf("\nUsers in System:\n");
-    for (int i = 0; i < user_count; i++) {
+
+    for (int i = 0; i < user_count; i++) 
+    {
         printf("ID: %d | Username: %s\n", users[i].id, users[i].username);
     }
 }
 
-void edit_book() {
+void edit_book() 
+{
     int book_id;
     printf("Enter the book ID to edit: ");
     scanf("%d", &book_id);
     clear_buffer();
 
-    if (book_id <= 0 || book_id > book_count) {
+    if (book_id <= 0 || book_id > book_count) 
+    {
         printf("Invalid book ID.\n");
         return;
     }
@@ -257,7 +293,9 @@ void edit_book() {
     char new_title[TITLE_LENGTH];
     fgets(new_title, TITLE_LENGTH, stdin);
     strtok(new_title, "\n");  // Remove newline
-    if (strlen(new_title) > 0) {
+
+    if (strlen(new_title) > 0) 
+    {
         strcpy(book->title, new_title);
     }
     
@@ -265,27 +303,33 @@ void edit_book() {
     char new_author[AUTHOR_LENGTH];
     fgets(new_author, AUTHOR_LENGTH, stdin);
     strtok(new_author, "\n");  // Remove newline
-    if (strlen(new_author) > 0) {
+
+    if (strlen(new_author) > 0) 
+    {
         strcpy(book->author, new_author);
     }
 
     printf("Book updated successfully!\n");
 }
 
-void delete_book() {
+void delete_book() 
+{
     int book_id;
     printf("Enter the book ID to delete: ");
     scanf("%d", &book_id);
     clear_buffer();
 
-    if (book_id <= 0 || book_id > book_count) {
+    if (book_id <= 0 || book_id > book_count) 
+    {
         printf("Invalid book ID.\n");
         return;
     }
 
-    for (int i = book_id - 1; i < book_count - 1; i++) {
+    for (int i = book_id - 1; i < book_count - 1; i++) 
+    {
         library[i] = library[i + 1]; // Shift books left
     }
+    
     book_count--;
     printf("Book deleted successfully!\n");
 }
