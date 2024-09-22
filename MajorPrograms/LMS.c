@@ -334,6 +334,7 @@ void delete_book()
     printf("Book deleted successfully!\n");
 }
 
-void view_borrowed_books() {
+void view_borrowed_books() 
+{
     int user_id;
 }
