@@ -32,11 +32,18 @@ void set_due_date();
 void view_task_by_priority();
 void filter_tasks_by_tag();
 void overdue_tasks();
+void search_task_by_title();
+void sort_tasks_by_title();
+void export_tasks();
+void clear_all_tasks();
+void display_summary();
+void advanced_task_filter();
 void menu();
 void clear_buffer();
 void display_task(Task task);
 int validate_date(const char* date);
 int is_task_overdue(const char* due_date);
+int compare_dates(const char *date1, const char *date2);
 
 int main() {
     menu();
@@ -57,6 +64,12 @@ void menu() {
         printf("8. View Tasks by Priority\n");
         printf("9. Filter Tasks by Tag\n");
         printf("10. View Overdue Tasks\n");
+        printf("11. Search Task by Title\n");
+        printf("12. Sort Tasks by Title\n");
+        printf("13. Export Tasks\n");
+        printf("14. Clear All Tasks\n");
+        printf("15. Display Task Summary\n");
+        printf("16. Advanced Task Filter\n");
         printf("0. Exit\n");
         printf("Choose an option: ");
         scanf("%d", &choice);
@@ -73,6 +86,12 @@ void menu() {
             case 8: view_task_by_priority(); break;
             case 9: filter_tasks_by_tag(); break;
             case 10: overdue_tasks(); break;
+            case 11: search_task_by_title(); break;
+            case 12: sort_tasks_by_title(); break;
+            case 13: export_tasks(); break;
+            case 14: clear_all_tasks(); break;
+            case 15: display_summary(); break;
+            case 16: advanced_task_filter(); break;
             case 0: printf("Exiting...\n"); break;
             default: printf("Invalid option! Please try again.\n");
         }
@@ -337,4 +356,98 @@ int is_task_overdue(const char* due_date)
     snprintf(today, sizeof(today), "%04d-%02d-%02d", current_date.tm_year + 1900, current_date.tm_mon + 1, current_date.tm_mday);
 
     return strcmp(today, due_date) > 0;
+}
+
+void search_task_by_title() {
+    char title[MAX_TITLE_LENGTH];
+    printf("Enter task title to search: ");
+    fgets(title, MAX_TITLE_LENGTH, stdin);
+    strtok(title, "\n");
+
+    printf("\n--- Search Results for Title: %s ---\n", title);
+    int found = 0;
+    for (int i = 0; i < task_count; i++) {
+        if (strstr(tasks[i].title, title)) {
+            display_task(tasks[i]);
+            found = 1;
+        }
+    }
+
+    if (!found) {
+        printf("No tasks found with title \"%s\".\n", title);
+    }
+}
+
+void sort_tasks_by_title() {
+    for (int i = 0; i < task_count - 1; i++) {
+        for (int j = i + 1; j < task_count; j++) {
+            if (strcmp(tasks[i].title, tasks[j].title) > 0) {
+                Task temp = tasks[i];
+                tasks[i] = tasks[j];
+                tasks[j] = temp;
+            }
+        }
+    }
+    printf("Tasks sorted by title.\n");
+}
+
+void export_tasks() {
+    FILE *file = fopen("tasks_export.txt", "w");
+    if (file == NULL) {
+        printf("Error opening file for export.\n");
+        return;
+    }
+
+    for (int i = 0; i < task_count; i++) {
+        Task task = tasks[i];
+        fprintf(file, "ID: %d | Title: %s | Description: %s | Status: %s | Priority: %d | Due Date: %s | Tags: ",
+                task.id, task.title, task.description, task.is_completed ? "Completed" : "Pending",
+                task.priority, task.due_date);
+        for (int j = 0; j < MAX_TAGS && strlen(task.tags[j]) > 0; j++) {
+            fprintf(file, "%s ", task.tags[j]);
+        }
+        fprintf(file, "\n");
+    }
+
+    fclose(file);
+    printf("Tasks exported successfully!\n");
+}
+
+void clear_all_tasks() {
+    task_count = 0;
+    printf("All tasks cleared.\n");
+}
+
+void display_summary() {
+    printf("\n--- Task Summary ---\n");
+    printf("Total tasks: %d\n", task_count);
+
+    int completed = 0;
+    int pending = 0;
+    for (int i = 0; i < task_count; i++) {
+        if (tasks[i].is_completed) {
+            completed++;
+        } else {
+            pending++;
+        }
+    }
+    printf("Completed tasks: %d\n", completed);
+    printf("Pending tasks: %d\n", pending);
+}
+
+void advanced_task_filter() {
+    printf("\n--- Advanced Task Filter ---\n");
+    int min_priority, important_only;
+    printf("Enter minimum priority to filter (1: High, 2: Medium, 3: Low): ");
+    scanf("%d", &min_priority);
+    printf("Filter important tasks only? (1: Yes, 0: No): ");
+    scanf("%d", &important_only);
+    clear_buffer();
+
+    printf("\n--- Filtered Tasks ---\n");
+    for (int i = 0; i < task_count; i++) {
+        if (tasks[i].priority <= min_priority && (!important_only || tasks[i].is_completed)) {
+            display_task(tasks[i]);
+        }
+    }
 }
