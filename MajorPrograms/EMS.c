@@ -1,5 +1,3 @@
-// EMS (Employee Management System)
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,6 +35,13 @@ void menu();
 void display_employee(Employee emp);
 void calculate_total_salary(Employee *emp);
 int get_employee_index(int id);
+void update_years_of_service();
+void display_total_bonus();
+void display_average_salary();
+void swap_employees(Employee *emp1, Employee *emp2);
+void filter_employees_by_salary();
+void promote_employee();
+void demote_employee();
 
 int main() {
     load_employees_from_file();
@@ -56,6 +61,12 @@ void menu() {
         printf("5. Assign Department\n");
         printf("6. Search Employee\n");
         printf("7. Sort Employees\n");
+        printf("8. Update Years of Service\n");
+        printf("9. Display Total Bonus\n");
+        printf("10. Display Average Salary\n");
+        printf("11. Filter Employees by Salary\n");
+        printf("12. Promote Employee\n");
+        printf("13. Demote Employee\n");
         printf("0. Exit\n");
         printf("Choose an option: ");
         scanf("%d", &choice);
@@ -69,6 +80,12 @@ void menu() {
             case 5: assign_department(); break;
             case 6: search_employee(); break;
             case 7: sort_employees(); break;
+            case 8: update_years_of_service(); break;
+            case 9: display_total_bonus(); break;
+            case 10: display_average_salary(); break;
+            case 11: filter_employees_by_salary(); break;
+            case 12: promote_employee(); break;
+            case 13: demote_employee(); break;
             case 0: printf("Exiting...\n"); save_employees_to_file(); break;
             default: printf("Invalid option! Please try again.\n");
         }
@@ -244,6 +261,102 @@ void calculate_bonus(Employee *emp) {
 
 void calculate_total_salary(Employee *emp) {
     emp->total_salary = emp->base_salary + emp->bonus;
+}
+
+void update_years_of_service() {
+    int id;
+    printf("Enter employee ID to update years of service: ");
+    scanf("%d", &id);
+    clear_buffer();
+
+    int index = get_employee_index(id);
+    if (index == -1) {
+        printf("Employee not found.\n");
+        return;
+    }
+
+    Employee *emp = &employees[index];
+    printf("Current years of service: %d\n", emp->years_of_service);
+    printf("Enter new years of service: ");
+    scanf("%d", &emp->years_of_service);
+    clear_buffer();
+
+    calculate_salary(emp);
+    printf("Years of service updated successfully!\n");
+}
+
+void display_total_bonus() {
+    float total_bonus = 0;
+    for (int i = 0; i < employee_count; i++) {
+        total_bonus += employees[i].bonus;
+    }
+    printf("Total bonus distributed: %.2f\n", total_bonus);
+}
+
+void display_average_salary() {
+    float total_salary = 0;
+    for (int i = 0; i < employee_count; i++) {
+        total_salary += employees[i].total_salary;
+    }
+    printf("Average salary of employees: %.2f\n", total_salary / employee_count);
+}
+
+void swap_employees(Employee *emp1, Employee *emp2) {
+    Employee temp = *emp1;
+    *emp1 = *emp2;
+    *emp2 = temp;
+}
+
+void filter_employees_by_salary() {
+    float min_salary, max_salary;
+    printf("Enter minimum salary: ");
+    scanf("%f", &min_salary);
+    printf("Enter maximum salary: ");
+    scanf("%f", &max_salary);
+    clear_buffer();
+
+    printf("\n--- Employees within Salary Range ---\n");
+    for (int i = 0; i < employee_count; i++) {
+        if (employees[i].total_salary >= min_salary && employees[i].total_salary <= max_salary) {
+            display_employee(employees[i]);
+        }
+    }
+}
+
+void promote_employee() {
+    int id;
+    printf("Enter employee ID to promote: ");
+    scanf("%d", &id);
+    clear_buffer();
+
+    int index = get_employee_index(id);
+    if (index == -1) {
+        printf("Employee not found.\n");
+        return;
+    }
+
+    Employee *emp = &employees[index];
+    emp->base_salary *= 1.10; // 10% raise
+    calculate_salary(emp);
+    printf("Employee promoted successfully! New base salary: %.2f\n", emp->base_salary);
+}
+
+void demote_employee() {
+    int id;
+    printf("Enter employee ID to demote: ");
+    scanf("%d", &id);
+    clear_buffer();
+
+    int index = get_employee_index(id);
+    if (index == -1) {
+        printf("Employee not found.\n");
+        return;
+    }
+
+    Employee *emp = &employees[index];
+    emp->base_salary *= 0.90; // 10% deduction
+    calculate_salary(emp);
+    printf("Employee demoted successfully! New base salary: %.2f\n", emp->base_salary);
 }
 
 void search_employee() {
